@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Streamer Overlay Template</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #000;
+      }
+      .overlay {
+        text-align: center;
+        color: #fff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .overlay img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+      .overlay h1 {
+        font-size: 3em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlayContent">
+      <img
+        id="streamerImage"
+        src="https://pbs.twimg.com/media/GBMkWGbbUAA6zvs.jpg"
+        alt="Streamer Image"
+        width="200"
+        height="150"
+      />
+
+      <img
+        id="gifImage"
+        src="https://user-images.githubusercontent.com/14011726/94132137-7d4fc100-fe7c-11ea-8512-69f90cb65e48.gif"
+        alt="GIF"
+        width="200"
+        height="150"
+      />
+      <audio id="audio" controls>
+        <source id="audioSource" src="" type="audio/mpeg" />
+      </audio>
+      <h1 id="overlayText">Streamer Overlay</h1>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script>
+      const socket = io();
+      socket.on("overlayData", (data) => {
+        document.getElementById("streamerImage").src = data.streamerImageUrl;
+        document.getElementById("gifImage").src = data.gifUrl;
+        document.getElementById("audioSource").src = data.audioUrl;
+        document.getElementById("overlayText").innerText = data.overlayText;
+
+        if (data.overlayPosition) {
+          const overlay = document.getElementById("overlayContent");
+          overlay.style.top = data.overlayPosition.top || "50%";
+          overlay.style.left = data.overlayPosition.left || "50%";
+          overlay.style.transform = `translate(-${overlay.style.left}, -${overlay.style.top})`;
+        }
+
+        if (data.fontStyle) {
+          const overlayText = document.getElementById("overlayText");
+          overlayText.style.fontSize = data.fontStyle.fontSize || "3em";
+        }
+      });
+    </script>
+  </body>
+</html>
